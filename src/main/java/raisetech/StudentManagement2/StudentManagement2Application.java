@@ -2,6 +2,7 @@ package raisetech.StudentManagement2;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,5 +18,5 @@ public class StudentManagement2Application {
 	public String hello(){
 		return "Hello World!";
 	}
-	
+
 }
