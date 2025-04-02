@@ -45,9 +45,9 @@ public class StudentController {
     if (result.hasErrors()) {
       return "registerStudent";
     }
-    // ここに登録処理を追加する
-    return "redirect:/studentList"; // 成功後にリダイレクト
-  } // 修正: メソッドを閉じる
+    service.registerStudent(studentDetail);
+    return "redirect:/studentList";
+  }
 
   @GetMapping("/studentsCoursesList")
   public List<StudentsCourses> getStudentsCoursesList(){
