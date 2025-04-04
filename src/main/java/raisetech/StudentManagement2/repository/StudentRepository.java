@@ -24,8 +24,8 @@ public interface StudentRepository {
   @Select("select * from students_courses where student_id = #{studentId}")
   List<StudentsCourses> searchStudentsCourses(int studentId);
 
-  @Insert("insert into students(name, kana_name, nickname, email, area, age, sex, remark)"
-      + " values(#{name}, #{kanaName}, #{nickname}, #{email}, #{area}, #{age}, #{sex}, #{remark})")
+  @Insert("insert into students(name, kana_name, nickname, email, area, age, sex, remark, is_deleted)"
+      + " values(#{name}, #{kanaName}, #{nickname}, #{email}, #{area}, #{age}, #{sex}, #{remark}, false)")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void registerStudent(Student student);
 
