@@ -1,5 +1,6 @@
 package raisetech.StudentManagement2.controller;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import raisetech.StudentManagement2.service.StudentService;
 /**
  * 受講生の検索や登録、更新などを行うREST APIとして受け付けるControllerです。
  */
+@Valid
 @RestController
 public class StudentController {
 
