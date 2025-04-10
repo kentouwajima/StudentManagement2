@@ -1,47 +1,50 @@
 package raisetech.StudentManagement2.controller.converter;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
 import raisetech.StudentManagement2.domain.StudentDetail;
-import raisetech.StudentManagement2.repository.StudentRepository;
-import raisetech.StudentManagement2.service.StudentService;
 
-@ExtendWith(MockitoExtension.class)
 class StudentConverterTest {
 
-  @Mock
-  private StudentConverter converter;
+  private StudentConverter sut;
 
-  @Mock
-  private StudentRepository repository;
-
-  @InjectMocks
-  private StudentService sut;
+  @BeforeEach
+  void before(){
+    sut = new StudentConverter();
+  }
 
   @Test
-  void コンバータがサービス内で呼び出されること() {
-    List<Student> studentList = new ArrayList<>();
-    List<StudentCourse> studentCourseList = new ArrayList<>();
-    List<StudentDetail> expected = new ArrayList<>();
+  void 受講生のリストと受講生コース情報のリストを渡して受講生詳細のリストの作成ができること(){
+    Student student = createStudent();
 
-    when(repository.search()).thenReturn(studentList);
-    when(repository.searchStudentCourseList()).thenReturn(studentCourseList);
-    when(converter.convertStudentDetails(studentList, studentCourseList)).thenReturn(expected);
+    StudentCourse studentCourse = new StudentCourse();
+    studentCourse.setId(1);
+    studentCourse.setStudentId(1);
+    studentCourse.setCourseName("Javaコース");
+    studentCourse.setCourseStartAt(LocalDateTime.now());
+    studentCourse.setCourseEndAt(LocalDateTime.now().plusYears(1));
 
-    sut.searchStudentList();
+    List<Student> studentList = List.of(student);
+    List<StudentCourse> studentCourseList = List.of(studentCourse);
 
-    verify(converter, times(1)).convertStudentDetails(studentList, studentCourseList);
+    List<StudentDetail> actual = sut.convertStudentDetails(studentList, studentCourseList);
+
+    assertThat(actual.get(0).getStudent()).isEqualTo(student);
+    assertThat(actual.get(0).getStudentCourseList()).isEqualTo(studentCourseList);
+  }
+
+  private Student createStudent() {
+    Student student = new Student();
+    student.setId(1); // 修正！
+    student.setName("山田 太郎");
+    student.setEmail("yamada@example.com");
+    return student;
   }
 }
 
