@@ -32,9 +32,9 @@ public class StudentService {
    * @return　受講生詳細一覧（全件）
    */
   public List<StudentDetail> searchStudentList(){
-    List<Student> studnetList = repository.search();
+    List<Student> studentList = repository.search();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
-    return converter.convertStudentDetails(studnetList, studentCourseList);
+    return converter.convertStudentDetails(studentList, studentCourseList);
   }
 
   /**
