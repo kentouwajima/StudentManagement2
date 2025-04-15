@@ -22,6 +22,19 @@
     SELECT * FROM students_courses WHERE student_id = #{studentId}
   </select>
 
+  <!-- コースステータス情報の全件検索 -->
+  <select id="searchCourseStatuses" resultType="raisetech.StudentManagement2.data.CourseStatus">
+    select * from course_status
+  </select>
+
+  <!-- 受講生IDに紐づくすべてのコースステータス情報を取得 -->
+  <select id="searchCourseStatusesByStudentId" resultType="raisetech.StudentManagement2.data.CourseStatus">
+    SELECT cs.*
+    FROM course_status cs
+    INNER JOIN students_courses sc ON cs.student_course_id = sc.id
+    WHERE sc.student_id = #{studentId}
+  </select>
+
   <!-- 受講生を登録 -->
   <insert id="registerStudent" parameterType="raisetech.StudentManagement2.data.Student" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO students (name, kana_name, nickname, email, area, age, sex, remark, is_deleted)
@@ -32,6 +45,12 @@
   <insert id="registerStudentCourse" parameterType="raisetech.StudentManagement2.data.StudentCourse" useGeneratedKeys="true" keyProperty="id">
     INSERT INTO students_courses (student_id, course_name, course_start_at, course_end_at)
     VALUES (#{studentId}, #{courseName}, #{courseStartAt}, #{courseEndAt})
+  </insert>
+
+  <!-- コースステータス情報を登録 -->
+  <insert id="registerCourseStatus" parameterType="raisetech.StudentManagement2.data.CourseStatus" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO course_status (student_course_id, status)
+    VALUES (#{studentCourseId}, #{status})
   </insert>
 
   <!-- 受講生情報を更新 -->
@@ -46,6 +65,13 @@
   <update id="updateStudentCourse" parameterType="raisetech.StudentManagement2.data.StudentCourse">
     UPDATE students_courses
     SET course_name = #{courseName}
+    WHERE id = #{id}
+  </update>
+
+  <!-- コースステータス情報を更新 -->
+  <update id="updateCourseStatus" parameterType="raisetech.StudentManagement2.data.CourseStatus">
+    UPDATE course_status
+    SET status = #{status}
     WHERE id = #{id}
   </update>
 

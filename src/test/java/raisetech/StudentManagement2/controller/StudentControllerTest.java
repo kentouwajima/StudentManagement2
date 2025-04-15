@@ -60,9 +60,12 @@ class StudentControllerTest {
                         "isDeleted":false
                     },
                     "studentCourseList":[
-                        {
-                            "courseName":"AWSコース"
+                      {
+                        "courseName":"AWSコース",
+                        "courseStatus": {
+                        "status": "仮申込"
                         }
+                      }
                     ]
                 }
                 """
@@ -91,12 +94,15 @@ class StudentControllerTest {
                 },
                 "studentCourseList":[
                 {
-                    "id": 13,
-                    "studentId": 7,
-                    "courseName": "AWSコース",
-                    "courseStartAt": "2025-04-02T15:26:53",
-                    "courseEndAt": "2026-04-02T15:26:53"
-                }
+                     "id": 13,
+                     "studentId": 7,
+                     "courseName": "AWSコース",
+                     "courseStartAt": "2025-04-02T15:26:53",
+                     "courseEndAt": "2026-04-02T15:26:53",
+                     "courseStatus": {
+                       "status": "受講中"
+                     }
+                   }
               ]
             }
             """

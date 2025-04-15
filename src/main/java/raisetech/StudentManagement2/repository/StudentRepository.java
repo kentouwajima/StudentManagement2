@@ -2,6 +2,7 @@ package raisetech.StudentManagement2.repository;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
 
@@ -42,6 +43,21 @@ public interface StudentRepository {
   List<StudentCourse> searchStudentCourse(int studentId);
 
   /**
+   * 受講生IDに紐づくコースステータス情報をすべて取得します。
+   *
+   * @return コースステータスのリスト（全件）
+   */
+  List<CourseStatus> searchCourseStatuses();
+
+  /**
+   * 指定された受講生IDに紐づくコースステータス情報を取得します。
+   *
+   * @param studentId 受講生ID
+   * @return 受講生に紐づくコースステータスのリスト
+   */
+  List<CourseStatus> searchCourseStatusesByStudentId(int studentId);
+
+  /**
    * 受講生を新規登録します。IDに関しては自動採番を行う。
    *
    * @param student　受講生
@@ -56,6 +72,13 @@ public interface StudentRepository {
   void registerStudentCourse(StudentCourse studentCourse);
 
   /**
+   * コースステータス情報を新規登録します。IDは自動採番されます。
+   *
+   * @param courseStatus 登録するコースステータス情報
+   */
+  void registerCourseStatus(CourseStatus courseStatus);
+
+  /**
    * 受講生を更新します。
    *
    * @param student　受講生
@@ -68,4 +91,11 @@ public interface StudentRepository {
    * @param studentCourse　受講生コース情報
    */
   void updateStudentCourse(StudentCourse studentCourse);
+
+  /**
+   * コースステータス情報を更新します。
+   *
+   * @param courseStatus 更新対象のコースステータス情報
+   */
+  void updateCourseStatus(CourseStatus courseStatus);
 }

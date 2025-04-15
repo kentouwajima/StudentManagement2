@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
 
@@ -39,6 +40,19 @@ class StudentRepositoryTest {
   void 特定受講生のコース情報を取得できること() {
     List<StudentCourse> courses = sut.searchStudentCourse(1);
     assertThat(courses).isNotNull();
+  }
+
+  @Test
+  void 全てのコースステータスを取得できること() {
+    List<CourseStatus> courseStatuses = sut.searchCourseStatuses();
+    assertThat(courseStatuses).isNotEmpty();
+  }
+
+  @Test
+  void 指定した受講生のコースステータスを取得できること() {
+    int studentId = 1;
+    List<CourseStatus> courseStatuses = sut.searchCourseStatusesByStudentId(studentId);
+    assertThat(courseStatuses).isNotEmpty();
   }
 
   @Test
@@ -76,6 +90,19 @@ class StudentRepositoryTest {
   }
 
   @Test
+  void 受講生コースステータスを登録できること() {
+    CourseStatus newCourseStatus = new CourseStatus();
+    newCourseStatus.setStatus("仮申込");
+    newCourseStatus.setStudentCourseId(1);
+
+    sut.registerCourseStatus(newCourseStatus);
+
+    List<CourseStatus> courseStatuses = sut.searchCourseStatusesByStudentId(1);
+    assertThat(courseStatuses).isNotEmpty();
+    assertThat(courseStatuses.get(0).getStatus()).isEqualTo("仮申込");
+  }
+
+  @Test
   void 受講生情報を更新できること() {
     Student student = sut.searchStudent("1");
     String oldNickname = student.getNickname();
@@ -101,5 +128,19 @@ class StudentRepositoryTest {
     List<StudentCourse> updatedCourses = sut.searchStudentCourse(1);
     assertThat(updatedCourses.get(0).getCourseName()).isEqualTo("更新済みコース");
     assertThat(updatedCourses.get(0).getCourseName()).isNotEqualTo(oldCourseName);
+  }
+
+  @Test
+  void 受講生コースステータスを更新できること() {
+    CourseStatus existingCourseStatus = new CourseStatus();
+    existingCourseStatus.setId(1);
+    existingCourseStatus.setStatus("仮申込");
+    existingCourseStatus.setStudentCourseId(1);
+
+    sut.updateCourseStatus(existingCourseStatus);
+
+    List<CourseStatus> courseStatuses = sut.searchCourseStatusesByStudentId(1);
+    assertThat(courseStatuses).isNotEmpty();
+    assertThat(courseStatuses.get(0).getStatus()).isEqualTo("仮申込");
   }
 }
