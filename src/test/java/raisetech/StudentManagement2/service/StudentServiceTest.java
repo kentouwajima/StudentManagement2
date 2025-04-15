@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import raisetech.StudentManagement2.controller.converter.StudentConverter;
+import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
 import raisetech.StudentManagement2.domain.StudentDetail;
@@ -91,5 +92,43 @@ class StudentServiceTest {
 
     verify(repository, times(1)).updateStudent(student);
     verify(repository, times(1)).updateStudentCourse(studentCourse);
+  }
+
+  @Test
+  void コースステータス一覧の検索_リポジトリの処理が適切に呼び出せていること() {
+    List<CourseStatus> courseStatusList = new ArrayList<>();
+    when(repository.searchCourseStatuses()).thenReturn(courseStatusList);
+
+    List<CourseStatus> result = sut.searchCourseStatuses();
+
+    verify(repository, times(1)).searchCourseStatuses();
+    Assertions.assertEquals(courseStatusList, result);
+  }
+
+  @Test
+  void コースステータスの登録_リポジトリの処理が適切に呼び出せていること() {
+    CourseStatus courseStatus = new CourseStatus();
+
+    sut.registerCourseStatus(courseStatus);
+
+    verify(repository, times(1)).registerCourseStatus(courseStatus);
+  }
+
+  @Test
+  void コースステータスの更新_リポジトリの処理が適切に呼び出せていること() {
+    CourseStatus courseStatus = new CourseStatus();
+
+    sut.updateCourseStatus(courseStatus);
+
+    verify(repository, times(1)).updateCourseStatus(courseStatus);
+  }
+
+  @Test
+  void コースステータスの削除_リポジトリの処理が適切に呼び出せていること() {
+    int id = 1;
+
+    sut.deleteCourseStatus(id);
+
+    verify(repository, times(1)).deleteCourseStatus(id);
   }
 }

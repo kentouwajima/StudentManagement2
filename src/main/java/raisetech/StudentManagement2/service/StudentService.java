@@ -129,4 +129,43 @@ public class StudentService {
       }
     }
   }
+
+  /**
+   * コースステータスの一覧を取得します。
+   *
+   * @return courseStatusのリスト
+   */
+  public List<CourseStatus> searchCourseStatuses() {
+    return repository.searchCourseStatuses();
+  }
+
+  /**
+   * 単体のコースステータスを登録します。
+   *
+   * @param courseStatus 登録するステータス
+   */
+  @Transactional
+  public void registerCourseStatus(CourseStatus courseStatus) {
+    repository.registerCourseStatus(courseStatus);
+  }
+
+  /**
+   * 単体のコースステータスを更新します。
+   *
+   * @param courseStatus 更新するステータス
+   */
+  @Transactional
+  public void updateCourseStatus(CourseStatus courseStatus) {
+    repository.updateCourseStatus(courseStatus);
+  }
+
+  /**
+   * 単体のコースステータスを削除します。
+   *
+   * @param id 削除するCourseStatusのID
+   */
+  @Transactional
+  public void deleteCourseStatus(int id) {
+    repository.deleteCourseStatus(id);
+  }
 }

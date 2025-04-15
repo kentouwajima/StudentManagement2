@@ -143,4 +143,23 @@ class StudentRepositoryTest {
     assertThat(courseStatuses).isNotEmpty();
     assertThat(courseStatuses.get(0).getStatus()).isEqualTo("仮申込");
   }
+
+  @Test
+  void コースステータスを削除できること() {
+    CourseStatus courseStatus = new CourseStatus();
+    courseStatus.setStatus("削除対象ステータス");
+    courseStatus.setStudentCourseId(1);
+    sut.registerCourseStatus(courseStatus);
+
+    List<CourseStatus> allStatuses = sut.searchCourseStatusesByStudentId(1);
+    CourseStatus target = allStatuses.get(allStatuses.size() - 1);
+    int targetId = target.getId();
+
+    sut.deleteCourseStatus(targetId);
+
+    List<CourseStatus> afterDelete = sut.searchCourseStatusesByStudentId(1);
+    boolean isDeleted = afterDelete.stream().noneMatch(cs -> cs.getId() == targetId);
+
+    assertThat(isDeleted).isTrue();
+  }
 }

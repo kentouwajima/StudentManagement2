@@ -75,6 +75,8 @@
     WHERE id = #{id}
   </update>
 
-
-
+  <!-- course_status を削除 -->
+  <delete id="deleteCourseStatus">
+    DELETE FROM course_status WHERE id = #{id}
+  </delete>
 </mapper>

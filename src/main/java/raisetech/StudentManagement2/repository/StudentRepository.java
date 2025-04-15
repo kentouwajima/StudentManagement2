@@ -98,4 +98,9 @@ public interface StudentRepository {
    * @param courseStatus 更新対象のコースステータス情報
    */
   void updateCourseStatus(CourseStatus courseStatus);
+
+  /**
+   * course_status を ID で削除
+   */
+  void deleteCourseStatus(int id);
 }
