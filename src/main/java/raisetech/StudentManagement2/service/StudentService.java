@@ -2,10 +2,13 @@ package raisetech.StudentManagement2.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import raisetech.StudentManagement2.controller.converter.StudentConverter;
+import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
 import raisetech.StudentManagement2.domain.StudentDetail;
@@ -34,6 +37,21 @@ public class StudentService {
   public List<StudentDetail> searchStudentList(){
     List<Student> studentList = repository.search();
     List<StudentCourse> studentCourseList = repository.searchStudentCourseList();
+    List<CourseStatus> courseStatusList = repository.searchCourseStatuses(); // ステータス情報も取得
+
+    // CourseStatusをStudentCourseにネストするためのMapを作成
+    Map<Integer, CourseStatus> courseStatusMap = courseStatusList.stream()
+        .collect(Collectors.toMap(CourseStatus::getStudentCourseId, status -> status));
+
+    // studentCourseListに対して、対応するCourseStatusを設定
+    studentCourseList.forEach(studentCourse -> {
+      CourseStatus status = courseStatusMap.get(studentCourse.getId());
+      if (status != null) {
+        studentCourse.setCourseStatus(status);
+      }
+    });
+
+    // converterを使ってStudentDetailに変換
     return converter.convertStudentDetails(studentList, studentCourseList);
   }
 
@@ -45,8 +63,15 @@ public class StudentService {
    */
   public StudentDetail searchStudent(String id){
     Student student = repository.searchStudent(id);
-    List<StudentCourse> studentCourse = repository.searchStudentCourse(student.getId());
-    return new StudentDetail(student, studentCourse);
+    List<StudentCourse> studentCourseList = repository.searchStudentCourse(student.getId());
+    List<CourseStatus> courseStatus = repository.searchCourseStatusesByStudentId(student.getId());
+
+    Map<Integer, CourseStatus> courseStatusMap = courseStatus.stream()
+        .collect(Collectors.toMap(CourseStatus::getStudentCourseId, cs -> cs));
+
+    studentCourseList.forEach(sc -> sc.setCourseStatus(courseStatusMap.get(sc.getId())));
+
+    return new StudentDetail(student, studentCourseList);
   }
 
   /**
@@ -63,6 +88,12 @@ public class StudentService {
     studentDetail.getStudentCourseList().forEach(studentCourse -> {
       initStudentsCourse(studentCourse, student);
       repository.registerStudentCourse(studentCourse);
+
+      CourseStatus courseStatus = studentCourse.getCourseStatus();
+      if (courseStatus != null) {
+        courseStatus.setStudentCourseId(studentCourse.getId());
+        repository.registerCourseStatus(courseStatus);
+      }
     });
     return studentDetail;
   }
@@ -89,7 +120,53 @@ public class StudentService {
   @Transactional
   public void updateStudent(StudentDetail studentDetail) {
     repository.updateStudent(studentDetail.getStudent());
-    studentDetail.getStudentCourseList()
-        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+    for (StudentCourse studentCourse : studentDetail.getStudentCourseList()) {
+      repository.updateStudentCourse(studentCourse);
+
+      CourseStatus status = studentCourse.getCourseStatus();
+      if (status != null) {
+        repository.updateCourseStatus(status);
+      }
+    }
+  }
+
+  /**
+   * コースステータスの一覧を取得します。
+   *
+   * @return courseStatusのリスト
+   */
+  public List<CourseStatus> searchCourseStatuses() {
+    return repository.searchCourseStatuses();
+  }
+
+  /**
+   * 単体のコースステータスを登録します。
+   *
+   * @param courseStatus 登録するステータス
+   */
+  public void registerCourseStatus(CourseStatus courseStatus) {
+    StudentCourse studentCourse = repository.searchStudentCourseById(courseStatus.getStudentCourseId());
+    if (studentCourse == null) {
+      throw new IllegalArgumentException("指定されたコース情報が存在しません。");
+    }
+    repository.registerCourseStatus(courseStatus);
+  }
+
+  /**
+   * 単体のコースステータスを更新します。
+   *
+   * @param courseStatus 更新するステータス
+   */
+  public void updateCourseStatus(CourseStatus courseStatus) {
+    repository.updateCourseStatus(courseStatus);
+  }
+
+  /**
+   * 単体のコースステータスを削除します。
+   *
+   * @param id 削除するCourseStatusのID
+   */
+  public void deleteCourseStatus(int id) {
+    repository.deleteCourseStatus(id);
   }
 }
