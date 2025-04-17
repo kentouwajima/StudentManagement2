@@ -100,8 +100,12 @@ public class StudentController {
   @Operation(summary = "ステータス登録", description = "コースステータスを登録します。")
   @PostMapping("/registerCourseStatus")
   public ResponseEntity<String> registerCourseStatus(@RequestBody @Valid CourseStatus courseStatus) {
-    service.registerCourseStatus(courseStatus);
-    return ResponseEntity.ok("ステータスを登録しました。");
+    try {
+      service.registerCourseStatus(courseStatus);
+      return ResponseEntity.ok("ステータスを登録しました。");
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
   }
 
   /**

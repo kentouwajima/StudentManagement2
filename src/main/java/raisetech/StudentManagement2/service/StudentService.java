@@ -144,8 +144,11 @@ public class StudentService {
    *
    * @param courseStatus 登録するステータス
    */
-  @Transactional
   public void registerCourseStatus(CourseStatus courseStatus) {
+    StudentCourse studentCourse = repository.searchStudentCourseById(courseStatus.getStudentCourseId());
+    if (studentCourse == null) {
+      throw new IllegalArgumentException("指定されたコース情報が存在しません。");
+    }
     repository.registerCourseStatus(courseStatus);
   }
 
@@ -154,7 +157,6 @@ public class StudentService {
    *
    * @param courseStatus 更新するステータス
    */
-  @Transactional
   public void updateCourseStatus(CourseStatus courseStatus) {
     repository.updateCourseStatus(courseStatus);
   }
@@ -164,7 +166,6 @@ public class StudentService {
    *
    * @param id 削除するCourseStatusのID
    */
-  @Transactional
   public void deleteCourseStatus(int id) {
     repository.deleteCourseStatus(id);
   }

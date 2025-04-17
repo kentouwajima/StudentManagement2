@@ -79,4 +79,17 @@
   <delete id="deleteCourseStatus">
     DELETE FROM course_status WHERE id = #{id}
   </delete>
+
+  <!-- student_course をID指定で1件取得 -->
+  <select id="searchStudentCourseById" parameterType="int" resultType="raisetech.StudentManagement2.data.StudentCourse">
+    SELECT
+    id,
+    student_id,
+    course_start_at,
+    course_end_at
+    FROM
+    students_courses
+    WHERE
+    id = #{id}
+  </select>
 </mapper>

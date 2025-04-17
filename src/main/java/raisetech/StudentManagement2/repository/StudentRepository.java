@@ -103,4 +103,13 @@ public interface StudentRepository {
    * course_status を ID で削除
    */
   void deleteCourseStatus(int id);
+
+  /**
+   * 受講生コース情報をIDで検索します。
+   *
+   * @param id 受講生コースID
+   * @return 受講生コース情報（指定されたIDの情報）
+   */
+  StudentCourse searchStudentCourseById(int id);
+
 }
