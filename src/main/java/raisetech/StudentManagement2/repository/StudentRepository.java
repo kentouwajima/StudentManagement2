@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
+import raisetech.StudentManagement2.data.StudentSearchCondition;
 
 /**
  * 受講生テーブルと受講生コース情報テーブルと紐づくRepositoryです。
@@ -112,4 +113,11 @@ public interface StudentRepository {
    */
   StudentCourse searchStudentCourseById(int id);
 
+  /**
+   * 検索条件に基づいて受講生詳細を検索します。
+   *
+   * @param condition 検索条件（名前、エリア、年齢範囲、コース名、ステータスなど）
+   * @return 検索条件に合致する受講生のリスト
+   */
+  List<Student> searchStudentDetailByCondition(StudentSearchCondition condition);
 }

@@ -92,4 +92,47 @@
     WHERE
     id = #{id}
   </select>
+
+  <!-- 受講生検索条件に基づく詳細検索 -->
+  <select id="searchStudentDetailByCondition"
+    parameterType="raisetech.StudentManagement2.data.StudentSearchCondition"
+    resultType="raisetech.StudentManagement2.data.Student">
+    <!-- 受講生情報を検索 -->
+    SELECT * FROM students
+    <where>
+      <!-- 名前による検索（部分一致） -->
+      <if test="name != null and name != ''">
+        AND name LIKE CONCAT('%', #{name}, '%')
+      </if>
+      <!-- 地域による検索（部分一致） -->
+      <if test="area != null and area != ''">
+        AND area LIKE CONCAT('%', #{area}, '%')
+      </if>
+      <!-- 年齢範囲による検索（ageFrom と ageTo を指定） -->
+      <if test="ageFrom != null">
+        AND age &gt;= #{ageFrom}
+      </if>
+      <if test="ageTo != null">
+        AND age &lt;= #{ageTo}
+      </if>
+      <!-- コース名による検索（部分一致） -->
+      <if test="courseName != null and courseName != ''">
+        AND EXISTS (
+        SELECT 1 FROM students_courses
+        WHERE students_courses.student_id = students.id
+        AND students_courses.course_name LIKE CONCAT('%', #{courseName}, '%')
+        )
+      </if>
+      <!-- ステータスによる完全一致検索 -->
+      <if test="status != null and status != ''">
+        AND EXISTS (
+        SELECT 1
+        FROM course_status cs
+        INNER JOIN students_courses sc ON cs.student_course_id = sc.id
+        WHERE cs.status = #{status}
+        AND sc.student_id = students.id
+        )
+      </if>
+    </where>
+  </select>
 </mapper>
