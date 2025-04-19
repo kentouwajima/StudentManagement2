@@ -164,4 +164,23 @@ class StudentControllerTest {
     verify(service, times(1)).deleteCourseStatus(id);
   }
 
+  @Test
+  void 検索条件に基づいた受講生詳細の検索が実行できて空のリストが返ること() throws Exception {
+    mockMvc.perform(post("/searchStudentDetails")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+              {
+                  "name": "山田",
+                  "area": "東京",
+                  "ageFrom": 20,
+                  "ageTo": 30,
+                  "courseName": "Java",
+                  "status": "受講中"
+              }
+              """))
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
+
+    verify(service, times(1)).searchStudentDetailsByCondition(any());
+  }
 }

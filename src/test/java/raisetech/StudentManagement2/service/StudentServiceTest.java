@@ -16,6 +16,7 @@ import raisetech.StudentManagement2.controller.converter.StudentConverter;
 import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
+import raisetech.StudentManagement2.data.StudentSearchCondition;
 import raisetech.StudentManagement2.domain.StudentDetail;
 import raisetech.StudentManagement2.repository.StudentRepository;
 
@@ -108,9 +109,14 @@ class StudentServiceTest {
   @Test
   void コースステータスの登録_リポジトリの処理が適切に呼び出せていること() {
     CourseStatus courseStatus = new CourseStatus();
+    courseStatus.setStudentCourseId(1);
+
+    StudentCourse existingCourse = new StudentCourse();
+    when(repository.searchStudentCourseById(1)).thenReturn(existingCourse);
 
     sut.registerCourseStatus(courseStatus);
 
+    verify(repository, times(1)).searchStudentCourseById(1);
     verify(repository, times(1)).registerCourseStatus(courseStatus);
   }
 
@@ -130,5 +136,46 @@ class StudentServiceTest {
     sut.deleteCourseStatus(id);
 
     verify(repository, times(1)).deleteCourseStatus(id);
+  }
+
+  @Test
+  void 受講生詳細の条件検索_正しく結果が返ること() {
+    // Arrange
+    Student student = new Student();
+    student.setId(1);
+    student.setName("田中");
+
+    StudentCourse course1 = new StudentCourse();
+    course1.setId(10);
+    course1.setStudentId(1);
+    course1.setCourseName("Javaコース");
+
+    CourseStatus status1 = new CourseStatus();
+    status1.setStudentCourseId(10);
+    status1.setStatus("受講中");
+
+    StudentSearchCondition condition = new StudentSearchCondition();
+    condition.setCourseName("Java");
+    condition.setStatus("受講中");
+
+    // モックの振る舞い設定
+    when(repository.searchStudentDetailByCondition(condition)).thenReturn(List.of(student));
+    when(repository.searchStudentCourse(1)).thenReturn(List.of(course1));
+    when(repository.searchCourseStatusesByStudentId(1)).thenReturn(List.of(status1));
+
+    // Act
+    List<StudentDetail> result = sut.searchStudentDetailsByCondition(condition);
+
+    // Assert
+    Assertions.assertEquals(1, result.size());
+    StudentDetail detail = result.get(0);
+    Assertions.assertEquals(1, detail.getStudent().getId());
+    Assertions.assertEquals(1, detail.getStudentCourseList().size());
+    Assertions.assertEquals("受講中", detail.getStudentCourseList().get(0).getCourseStatus().getStatus());
+
+    // Verify repository interaction
+    verify(repository, times(1)).searchStudentDetailByCondition(condition);
+    verify(repository, times(1)).searchStudentCourse(1);
+    verify(repository, times(1)).searchCourseStatusesByStudentId(1);
   }
 }

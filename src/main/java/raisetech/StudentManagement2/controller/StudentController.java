@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import raisetech.StudentManagement2.data.CourseStatus;
+import raisetech.StudentManagement2.data.StudentSearchCondition;
 import raisetech.StudentManagement2.domain.StudentDetail;
 import raisetech.StudentManagement2.service.StudentService;
 
@@ -132,5 +133,16 @@ public class StudentController {
   public ResponseEntity<String> deleteCourseStatus(@PathVariable int id) {
     service.deleteCourseStatus(id);
     return ResponseEntity.ok("ステータスを削除しました。");
+  }
+
+  /**
+   * 検索条件に基づいた受講生詳細の検索を行います。
+   *
+   * @param condition 検索条件
+   * @return 検索結果
+   */
+  @PostMapping("/searchStudentDetails")
+  public List<StudentDetail> searchStudentDetails(@RequestBody StudentSearchCondition condition) {
+    return service.searchStudentDetailsByCondition(condition);
   }
 }
