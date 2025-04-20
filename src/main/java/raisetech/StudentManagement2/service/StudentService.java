@@ -1,6 +1,7 @@
 package raisetech.StudentManagement2.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import raisetech.StudentManagement2.controller.converter.StudentConverter;
 import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
+import raisetech.StudentManagement2.data.StudentSearchCondition;
 import raisetech.StudentManagement2.domain.StudentDetail;
 import raisetech.StudentManagement2.repository.StudentRepository;
 
@@ -168,5 +170,38 @@ public class StudentService {
    */
   public void deleteCourseStatus(int id) {
     repository.deleteCourseStatus(id);
+  }
+
+  /**
+   * 検索条件に基づいて受講生詳細を検索します。
+   *
+   * @param condition 検索条件（名前、エリア、年齢範囲、コース名、ステータスなど）
+   * @return 検索条件に合致する受講生のリスト
+   */
+  public List<StudentDetail> searchStudentDetailsByCondition(StudentSearchCondition condition) {
+    List<Student> students = repository.searchStudentDetailByCondition(condition);
+    List<StudentDetail> result = new ArrayList<>();
+
+    for (Student student : students) {
+      List<StudentCourse> courses = repository.searchStudentCourse(student.getId());
+      List<CourseStatus> statuses = repository.searchCourseStatusesByStudentId(student.getId());
+
+      Map<Integer, CourseStatus> statusMap = statuses.stream()
+          .collect(Collectors.toMap(CourseStatus::getStudentCourseId, cs -> cs));
+
+      if (condition.getCourseName() != null && !condition.getCourseName().isEmpty()) {
+        courses = courses.stream()
+            .filter(course -> course.getCourseName().contains(condition.getCourseName()))
+            .collect(Collectors.toList());
+      }
+
+      for (StudentCourse course : courses) {
+        course.setCourseStatus(statusMap.get(course.getId()));
+      }
+
+      result.add(new StudentDetail(student, courses));
+    }
+
+    return result;
   }
 }

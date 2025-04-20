@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import raisetech.StudentManagement2.data.CourseStatus;
 import raisetech.StudentManagement2.data.Student;
 import raisetech.StudentManagement2.data.StudentCourse;
+import raisetech.StudentManagement2.data.StudentSearchCondition;
 
 @MybatisTest
 class StudentRepositoryTest {
@@ -161,5 +162,51 @@ class StudentRepositoryTest {
     boolean isDeleted = afterDelete.stream().noneMatch(cs -> cs.getId() == targetId);
 
     assertThat(isDeleted).isTrue();
+  }
+
+  @Test
+  void 名前による受講生検索ができること() {
+    StudentSearchCondition condition = new StudentSearchCondition();
+    condition.setName("山田");
+    List<Student> actual = sut.searchStudentDetailByCondition(condition);
+    assertThat(actual).isNotEmpty();
+    assertThat(actual.get(0).getName()).contains("山田");
+  }
+
+  @Test
+  void エリアによる受講生検索ができること() {
+    StudentSearchCondition condition = new StudentSearchCondition();
+    condition.setArea("東京都");
+    List<Student> actual = sut.searchStudentDetailByCondition(condition);
+    assertThat(actual).isNotEmpty();
+    assertThat(actual.get(0).getArea()).contains("東京都");
+  }
+
+  @Test
+  void 年齢範囲による受講生検索ができること() {
+    StudentSearchCondition condition = new StudentSearchCondition();
+    condition.setAgeFrom(20);
+    condition.setAgeTo(30);
+    List<Student> actual = sut.searchStudentDetailByCondition(condition);
+    assertThat(actual).isNotEmpty();
+    actual.forEach(student -> {
+      assertThat(student.getAge()).isBetween(20, 30);
+    });
+  }
+
+  @Test
+  void コース名で受講生を検索できること() {
+    // コース名「Javaコース」に該当する受講生を検索
+    StudentSearchCondition condition = new StudentSearchCondition();
+    condition.setCourseName("Javaコース");
+
+    // 検索結果を取得
+    List<Student> actual = sut.searchStudentDetailByCondition(condition);
+
+    // 受講生のコース名に「Javaコース」が含まれていることを確認
+    assertThat(actual).allMatch(student ->
+        sut.searchStudentCourse(student.getId()).stream()
+            .anyMatch(course -> "Javaコース".equals(course.getCourseName()))
+    );
   }
 }
